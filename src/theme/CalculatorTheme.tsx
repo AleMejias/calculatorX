@@ -18,7 +18,14 @@ export const styles = StyleSheet.create({
     calculatorContainer:{
         flex: 1,
         justifyContent:'flex-end',
-        paddingHorizontal: 15,
+        paddingHorizontal: 35,
+        // borderWidth:1,
+        // borderColor: colors.white,
+    },
+    resultContainer:{
+        paddingHorizontal: 10,
+        // borderWidth:1,
+        // borderColor: colors.white,
     },
     buttonContainer:{
         // borderWidth:1,
@@ -33,7 +40,7 @@ export const styles = StyleSheet.create({
         height: 70,
         alignItems:'center',
         justifyContent:'center',
-        marginHorizontal:7,
+        marginHorizontal:9,
         width: 70,
     },
     buttonText:{
