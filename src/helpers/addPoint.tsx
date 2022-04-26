@@ -1,22 +1,45 @@
 
 export const addPoint = ( currentNumber:string ): string => {
-    let lengthNumber = currentNumber.length;
-    let value = currentNumber;
+    let currentValue = currentNumber.replace('.','').split('');
+    let value:string = '';
 
-    if ( lengthNumber === 4){
-        value = currentNumber.slice(0, 1) +  '.' + currentNumber.slice(1);
+    let lengthNumber = currentNumber.includes(',') ? currentNumber.slice(0,currentNumber.indexOf(',')).length : currentValue.length;
+
+    currentValue.forEach(( num , index) => {
+        value = value + num;
+        if ( (lengthNumber === 4 || lengthNumber === 7 ) && (index === 0 || index === 3) ) {
+
+            if ( currentValue[index + 1] !== ',' ) {
+                value = value + '.';
+            }
+        } else if ( ( lengthNumber === 5 || lengthNumber === 8 ) && ( index === 1 || index === 4 ) ) {
+            if ( currentValue[index + 1] !== ',' ) {
+                value = value + '.';
+            }
+        } else if ( ( lengthNumber === 6 || lengthNumber === 9 ) && ( index === 2 || index === 5) ) {
+            if ( currentValue[index + 1] !== ',' ) {
+                value = value + '.';
+            }
+        }
+    });
+
+
+/*     if ( lengthNumber === 4 ){
+        value = value.slice(0,1) + '.' + value.slice(1);
     } else if ( lengthNumber === 5 ) {
-        value = currentNumber.slice(0,2) + '.' + currentNumber.slice(2);
+        value = value.slice(0,2) + '.' + value.slice(2);
     } else if ( lengthNumber === 6 ) {
-        value = currentNumber.slice(0,3) + '.' + currentNumber.slice(3);
+        value = value.slice(0,3) + '.' + value.slice(3);
     } else if ( lengthNumber === 7 ) {
-        value = currentNumber.slice(0,1) + '.' + currentNumber.slice(1,4) + '.' + currentNumber.slice(4);
-    } else if ( lengthNumber === 8 ) {
-        value = currentNumber.slice(0,2) + '.' + currentNumber.slice(2,5) + '.' + currentNumber.slice(5);
-    } else if ( lengthNumber === 9 ) {
-        value = currentNumber.slice(0,3) + '.' + currentNumber.slice(3,6) + '.' + currentNumber.slice(6);
+        value = value.slice(0,1) + '.' + value.slice(1,4) + '.' + value.slice(4);
     }
+    if ( lengthNumber === 8 ) {
+        value = value.slice(0,2) + '.' + value.slice(2,5) + '.' + value.slice(5);
+    } else if ( lengthNumber === 9 ) {
+        value = value.slice(0,3) + '.' + value.slice(3,6) + '.' + value.slice(6);
+    } */
 
-    return value;
+    return currentValue.join('');
 
 };
+console.log(addPoint('12345'));

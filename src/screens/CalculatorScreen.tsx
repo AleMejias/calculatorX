@@ -31,8 +31,8 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 currentNumbers: '',
             };
         case 'setNumber':
-            if ( state.currentNumbers.length > 9 && state.currentNumbers.includes(',') ) {return state;}
-            if ( state.currentNumbers.length > 8 && !state.currentNumbers.includes(',') ) {return state;}
+            // if ( state.currentNumbers.length > 10 ) {return state;}
+            // if ( state.currentNumbers.length > 9 && !state.currentNumbers.includes(',') ) {return state;}
             if ( action.payload.includes('0') ) {
                 if ( state.currentNumbers === '' ){
                     return state;
@@ -58,7 +58,7 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
             } else {
                 return {
                     ...state,
-                    currentNumbers: state.currentNumbers + action.payload,
+                    currentNumbers: addPoint(state.currentNumbers + action.payload),
                 };
             }
             default:
@@ -72,8 +72,6 @@ export const CalculatorScreen = () => {
 
     let previuosR = (state.previousResult === '' ? '0' : state.previousResult);
     let currentR = (state.currentNumbers === '' ? '0' : state.currentNumbers);
-
-    console.log(state.currentNumbers);
     return (
         <View style={ styles.calculatorContainer }>
             <View style={ styles.resultContainer }>
@@ -86,7 +84,9 @@ export const CalculatorScreen = () => {
                     numberOfLines={ 1 }
                     adjustsFontSizeToFit={ true }
                 >
-                    { state.currentNumbers.length > 3 ? addPoint( currentR.replace('.','') ) : currentR }
+                    {/* { state.currentNumbers.length > 3 ? addPoint( currentR.replace('.','') ) : currentR } */
+                        currentR
+                    }
                 </Text>
             </View>
 
