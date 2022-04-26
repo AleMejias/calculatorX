@@ -26,7 +26,8 @@ export const CalculatorButton = ( {
             <Text style={{
                 ...styles.buttonText,
                 color:textColor,
-            }}>{ title }</Text>
+            }}>{ title }
+            </Text>
         </TouchableOpacity>
     );
 };

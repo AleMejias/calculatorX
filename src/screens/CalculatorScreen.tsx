@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { colors, styles } from '../theme/CalculatorTheme';
 import { CalculatorButton } from '../components/CalculatorButton';
 import { CalculatorState } from '../interfaces/ButtonsInterface';
+import { addPoint } from '../helpers/addPoint';
 
 
 type Actions =
@@ -20,7 +21,9 @@ const initialValue : CalculatorState = {
 };
 
 
+
 const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
+
     switch ( action.type ) {
         case 'clear':
             return {
@@ -28,8 +31,7 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 currentNumbers: '',
             };
         case 'setNumber':
-
-            if ( state.currentNumbers.length > 12 && state.currentNumbers.includes(',') ) {return state;}
+            if ( state.currentNumbers.length > 9 && state.currentNumbers.includes(',') ) {return state;}
             if ( state.currentNumbers.length > 8 && !state.currentNumbers.includes(',') ) {return state;}
             if ( action.payload.includes('0') ) {
                 if ( state.currentNumbers === '' ){
@@ -59,28 +61,32 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                     currentNumbers: state.currentNumbers + action.payload,
                 };
             }
-        default:
-            return state;
-    }
+            default:
+                return state;
+            }
 };
 export const CalculatorScreen = () => {
 
 
     const [ state , dispatch ] = useReducer( calculatorReducer,initialValue );
 
+    let previuosR = (state.previousResult === '' ? '0' : state.previousResult);
+    let currentR = (state.currentNumbers === '' ? '0' : state.currentNumbers);
 
+    console.log(state.currentNumbers);
     return (
         <View style={ styles.calculatorContainer }>
             <View style={ styles.resultContainer }>
                 {
-                   state.currentResult && <Text style={ styles.previousResult }>{ (state.previousResult === '' ? '0' : state.previousResult) }</Text>
+                   state.currentResult !== '0' ? <Text style={ styles.previousResult }>{ previuosR }</Text> : null
+                   /*{  }  */
                 }
                 <Text
                     style={ styles.result }
                     numberOfLines={ 1 }
                     adjustsFontSizeToFit={ true }
                 >
-                    { (state.currentNumbers === '' ? '0' : state.currentNumbers) }
+                    { state.currentNumbers.length > 3 ? addPoint( currentR.replace('.','') ) : currentR }
                 </Text>
             </View>
 
