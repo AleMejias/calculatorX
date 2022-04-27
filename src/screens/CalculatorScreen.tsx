@@ -5,21 +5,28 @@ import { Text, View } from 'react-native';
 import { colors, styles } from '../theme/CalculatorTheme';
 import { CalculatorButton } from '../components/CalculatorButton';
 import { CalculatorState } from '../interfaces/ButtonsInterface';
-import { addPoint } from '../helpers/addPoint';
+import { handlePointAndComma } from '../helpers/handlePointAndComma';
+import { changeToPositiveOrNegative } from '../helpers/changeToPositiveOrNegative';
+
 
 
 type Actions =
 | { type: 'clear' }
-| { type: 'setNumber', payload: string };
+| { type: 'setNumber', payload: string }
+| { type: 'changeToPositiveOrNegative' , payload: string }
+| { type: 'operation' , payload:string };
 
 
 
 const initialValue : CalculatorState = {
     currentNumbers:'',
-    previousResult:'',
     currentResult:'',
     numberWithComma: '',
     numberWithOutComma: '',
+    firstNumber: '0',
+    secondNumber: '0',
+    typeOfOperation: '',
+    isActive:false,
 };
 
 
@@ -27,21 +34,40 @@ const initialValue : CalculatorState = {
 const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
 
     switch ( action.type ) {
+        case 'changeToPositiveOrNegative':
+            return {
+                ...state,
+                currentNumbers: changeToPositiveOrNegative(state.currentNumbers),
+            };
         case 'clear':
             return {
                 ...state,
                 currentNumbers: '',
+                firstNumber: '',
+                typeOfOperation: '',
+                isActive: false,
+
+            };
+        case 'operation':
+            return {
+                ...state,
+                firstNumber: state.currentNumbers,
+                typeOfOperation: action.payload,
+                isActive: true,
             };
         case 'setNumber':
-            // if ( state.currentNumbers.length > 10 ) {return state;}
-            // if ( state.currentNumbers.length > 9 && !state.currentNumbers.includes(',') ) {return state;}
+            if ( state.currentNumbers.length > 9 && !state.currentNumbers.includes('.') ) {return state;}
+            if ( state.currentNumbers.length > 11 && (state.currentNumbers.includes('.') && state.currentNumbers.includes(',')) ) {return state;}
+            if ( state.currentNumbers.length > 11 && state.currentNumbers.includes(',') ) {return state;}
+            if ( state.currentNumbers.length > 10 && !state.currentNumbers.includes(',') ) {return state;}
+
             if ( action.payload.includes('0') ) {
                 if ( state.currentNumbers === '' ){
                     return state;
                 } else {
                     return {
                         ...state,
-                        currentNumbers: addPoint(state.currentNumbers + action.payload),
+                        currentNumbers: handlePointAndComma(state.currentNumbers + action.payload),
                     };
                 }
             } else if ( action.payload.includes(',') ){
@@ -49,18 +75,18 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 if ( state.currentNumbers === '' ){
                     return {
                         ...state,
-                        currentNumbers: addPoint('0' + action.payload),
+                        currentNumbers: handlePointAndComma('0' + action.payload),
                     };
                 } else {
                     return {
                         ...state,
-                        currentNumbers: addPoint(state.currentNumbers + action.payload),
+                        currentNumbers: handlePointAndComma(state.currentNumbers + action.payload),
                     };
                 }
             } else {
                 return {
                     ...state,
-                    currentNumbers: addPoint(state.currentNumbers + action.payload),
+                    currentNumbers: handlePointAndComma(state.currentNumbers + action.payload),
                 };
             }
             default:
@@ -71,22 +97,18 @@ export const CalculatorScreen = () => {
 
 
     const [ state , dispatch ] = useReducer( calculatorReducer,initialValue );
-
-    let previuosR = (state.previousResult === '' ? '0' : state.previousResult);
     let currentR = (state.currentNumbers === '' ? '0' : state.currentNumbers);
+
+    console.log(state);
     return (
         <View style={ styles.calculatorContainer }>
             <View style={ styles.resultContainer }>
-                {
-                   state.currentResult !== '0' ? <Text style={ styles.previousResult }>{ previuosR }</Text> : null
-                   /*{  }  */
-                }
                 <Text
                     style={ styles.result }
                     numberOfLines={ 1 }
                     adjustsFontSizeToFit={ true }
                 >
-                    {/* { state.currentNumbers.length > 3 ? addPoint( currentR.replace('.','') ) : currentR } */
+                    {
                         currentR
                     }
                 </Text>
@@ -94,7 +116,7 @@ export const CalculatorScreen = () => {
 
             <View style={ styles.buttonContainer }>
                 <CalculatorButton title="C" background={ colors.grayLight } textColor={ colors.black } dispatch={ () => dispatch({type:'clear'}) }/>
-                <CalculatorButton title="+/-" background={ colors.grayLight } textColor={ colors.black } />
+                <CalculatorButton title="+/-" background={ colors.grayLight } textColor={ colors.black } dispatch={ () => dispatch({type:'changeToPositiveOrNegative',payload:currentR}) }/>
                 <CalculatorButton title="%" background={ colors.grayLight } textColor={ colors.black } />
                 <CalculatorButton title="÷" background={ colors.orange } />
             </View>
@@ -114,7 +136,7 @@ export const CalculatorScreen = () => {
                 <CalculatorButton title="1" dispatch={ () => dispatch({type:'setNumber', payload:'1'}) }/>
                 <CalculatorButton title="2" dispatch={ () => dispatch({type:'setNumber', payload:'2'}) }/>
                 <CalculatorButton title="3" dispatch={ () => dispatch({type:'setNumber', payload:'3'}) }/>
-                <CalculatorButton title="+" background={ colors.orange } />
+                <CalculatorButton title="+" background={ colors.orange } dispatch={ () => !state.isActive ? dispatch({type:'operation', payload:'+'}) : ''}/>
             </View>
             <View style={ styles.buttonContainer }>
                 <CalculatorButton title="0" buttonLarge={ true } dispatch={ () => dispatch({type:'setNumber', payload:'0'}) }/>

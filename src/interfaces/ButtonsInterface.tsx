@@ -1,10 +1,13 @@
 
 export interface CalculatorState{
     currentNumbers:string;
-    previousResult:string;
     currentResult:string;
     numberWithComma:string;
     numberWithOutComma:string;
+    firstNumber:string;
+    secondNumber:string;
+    typeOfOperation:string;
+    isActive:boolean;
 }
 
 export interface Button{
