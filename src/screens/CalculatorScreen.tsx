@@ -18,6 +18,8 @@ const initialValue : CalculatorState = {
     currentNumbers:'',
     previousResult:'',
     currentResult:'',
+    numberWithComma: '',
+    numberWithOutComma: '',
 };
 
 
@@ -39,7 +41,7 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 } else {
                     return {
                         ...state,
-                        currentNumbers: state.currentNumbers + action.payload,
+                        currentNumbers: addPoint(state.currentNumbers + action.payload),
                     };
                 }
             } else if ( action.payload.includes(',') ){
@@ -47,12 +49,12 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 if ( state.currentNumbers === '' ){
                     return {
                         ...state,
-                        currentNumbers: '0' + action.payload,
+                        currentNumbers: addPoint('0' + action.payload),
                     };
                 } else {
                     return {
                         ...state,
-                        currentNumbers: state.currentNumbers + action.payload,
+                        currentNumbers: addPoint(state.currentNumbers + action.payload),
                     };
                 }
             } else {

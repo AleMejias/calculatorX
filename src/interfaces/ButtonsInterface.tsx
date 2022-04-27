@@ -3,6 +3,8 @@ export interface CalculatorState{
     currentNumbers:string;
     previousResult:string;
     currentResult:string;
+    numberWithComma:string;
+    numberWithOutComma:string;
 }
 
 export interface Button{
