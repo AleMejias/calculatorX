@@ -14,44 +14,81 @@ type Actions =
 | { type: 'clear' }
 | { type: 'setNumber', payload: string }
 | { type: 'changeToPositiveOrNegative' , payload: string }
-| { type: 'operation' , payload:string };
+| { type: 'operation' , payload:string }
+| { type: 'calculate' , payload:CalculatorState};
 
 
 
 const initialValue : CalculatorState = {
     currentNumbers:'',
     currentResult:'',
-    numberWithComma: '',
-    numberWithOutComma: '',
     firstNumber: '0',
     secondNumber: '0',
     typeOfOperation: '',
+    lastOperation: '',
     isActive:false,
 };
 
+/* const handleOperations = ( firtsNumber:string , secondNumber:string, operatorType:string):string => {
 
+    let result:number = 0;
+    if ( operatorType === '+' ) {
+         result = parseFloat( firtsNumber ) + parseFloat( secondNumber );
+    }
+
+    return result.toString();
+}; */
+
+const getResult = ( state:CalculatorState ):string => {
+    let result:number = 0;
+    if ( state.secondNumber !== '' ) {
+
+        if ( state.typeOfOperation === '') {
+            result = Number( state.firstNumber ) + Number( state.currentResult );
+            // console.log(`El resultado entre ${state.firstNumber} y ${state.secondNumber} es : ${result}`);
+        } else if ( state.currentResult !== '' ) {
+            result = Number(state.currentResult) + Number(state.secondNumber);
+        } else {
+            result = Number(state.firstNumber) + Number(state.secondNumber);
+        }
+
+    }
+    return result.toString();
+};
 
 const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
-
+    let result:string = '';
     switch ( action.type ) {
         case 'changeToPositiveOrNegative':
             return {
                 ...state,
                 currentNumbers: changeToPositiveOrNegative(state.currentNumbers),
             };
+        case 'calculate':
+            return {
+                ...state,
+                currentNumber : '',
+                currentResult: getResult( state ),
+                typeOfOperation: '',
+                isActive: false,
+            };
         case 'clear':
             return {
                 ...state,
                 currentNumbers: '',
                 firstNumber: '',
+                secondNumber:'',
+                currentResult:'',
                 typeOfOperation: '',
+                lastOperation: '',
                 isActive: false,
 
             };
         case 'operation':
             return {
                 ...state,
-                firstNumber: state.currentNumbers,
+                currentNumbers: '',
+                lastOperation: action.payload,
                 typeOfOperation: action.payload,
                 isActive: true,
             };
@@ -61,33 +98,49 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
             if ( state.currentNumbers.length > 11 && state.currentNumbers.includes(',') ) {return state;}
             if ( state.currentNumbers.length > 10 && !state.currentNumbers.includes(',') ) {return state;}
 
-            if ( action.payload.includes('0') ) {
+            if ( action.payload.includes('0') && state.firstNumber === '' ) {
                 if ( state.currentNumbers === '' ){
                     return state;
                 } else {
+                    result = handlePointAndComma(state.currentNumbers + action.payload);
                     return {
                         ...state,
-                        currentNumbers: handlePointAndComma(state.currentNumbers + action.payload),
+                        currentNumbers: result,
                     };
                 }
             } else if ( action.payload.includes(',') ){
 
                 if ( state.currentNumbers === '' ){
+                    result = handlePointAndComma('0' + action.payload);
                     return {
                         ...state,
-                        currentNumbers: handlePointAndComma('0' + action.payload),
+                        currentNumbers: result,
                     };
                 } else {
+                    result = handlePointAndComma(state.currentNumbers + action.payload);
                     return {
                         ...state,
-                        currentNumbers: handlePointAndComma(state.currentNumbers + action.payload),
+                        currentNumbers: result,
                     };
                 }
             } else {
-                return {
-                    ...state,
-                    currentNumbers: handlePointAndComma(state.currentNumbers + action.payload),
-                };
+
+                if ( state.isActive ) {
+                    result = handlePointAndComma(state.currentNumbers + action.payload);
+                    console.log('entre aqui!!');
+                    return {
+                        ...state,
+                        currentNumbers: result,
+                        secondNumber: result,
+                    };
+                } else {
+                    result = handlePointAndComma(state.currentNumbers + action.payload);
+                    return {
+                        ...state,
+                        currentNumbers: result,
+                        firstNumber: result ,
+                    };
+                }
             }
             default:
                 return state;
@@ -109,7 +162,7 @@ export const CalculatorScreen = () => {
                     adjustsFontSizeToFit={ true }
                 >
                     {
-                        currentR
+                        state.currentResult === '' ? currentR : state.currentResult
                     }
                 </Text>
             </View>
@@ -141,7 +194,7 @@ export const CalculatorScreen = () => {
             <View style={ styles.buttonContainer }>
                 <CalculatorButton title="0" buttonLarge={ true } dispatch={ () => dispatch({type:'setNumber', payload:'0'}) }/>
                 <CalculatorButton title="," dispatch={ () => dispatch({type:'setNumber', payload:','})}/>
-                <CalculatorButton title="=" background={ colors.orange } />
+                <CalculatorButton title="=" background={ colors.orange } dispatch={ () => dispatch({type:'calculate',payload:state}) }/>
             </View>
         </View>
     );

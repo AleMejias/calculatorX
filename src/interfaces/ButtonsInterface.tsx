@@ -2,11 +2,10 @@
 export interface CalculatorState{
     currentNumbers:string;
     currentResult:string;
-    numberWithComma:string;
-    numberWithOutComma:string;
     firstNumber:string;
     secondNumber:string;
     typeOfOperation:string;
+    lastOperation:string;
     isActive:boolean;
 }
 
