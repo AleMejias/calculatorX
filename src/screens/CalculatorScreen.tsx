@@ -15,7 +15,7 @@ type Actions =
 | { type: 'setNumber', payload: string }
 | { type: 'changeToPositiveOrNegative' , payload: string }
 | { type: 'operation' , payload:string }
-| { type: 'calculate' , payload:CalculatorState};
+| { type: 'calculate' };
 
 
 
@@ -39,9 +39,12 @@ const initialValue : CalculatorState = {
     return result.toString();
 }; */
 
-const getResult = ( state:CalculatorState ):string => {
+const getResult = ( firstNumber:string , secondNumber:string ,operationType:string):string => {
     let result:number = 0;
-    if ( state.secondNumber !== '' ) {
+    if ( operationType === '+' ) {
+        result = Number(firstNumber) + Number(secondNumber);
+    }
+/*     if ( state.secondNumber !== '' ) {
 
         if ( state.typeOfOperation === '') {
             result = Number( state.firstNumber ) + Number( state.currentResult );
@@ -52,7 +55,7 @@ const getResult = ( state:CalculatorState ):string => {
             result = Number(state.firstNumber) + Number(state.secondNumber);
         }
 
-    }
+    } */
     return result.toString();
 };
 
@@ -65,13 +68,43 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 currentNumbers: changeToPositiveOrNegative(state.currentNumbers),
             };
         case 'calculate':
-            return {
-                ...state,
-                currentNumber : '',
-                currentResult: getResult( state ),
-                typeOfOperation: '',
-                isActive: false,
-            };
+
+            if ( state.firstNumber !== '' && state.secondNumber !== '' && state.currentResult === '' ) {
+                result = getResult( state.firstNumber, state.secondNumber ,state.typeOfOperation );
+                return {
+                    ...state,
+                    currentResult:result,
+                    isActive: false,
+                };
+            } else if ( state.firstNumber !== '' && state.secondNumber !== '' && state.currentResult !== '' ) {
+                result = getResult( state.currentResult, state.secondNumber ,state.typeOfOperation );
+                return {
+                    ...state,
+                    currentResult:result,
+                    isActive: false,
+                };
+            } else if ( state.firstNumber !== '' && state.currentResult === ''  )  {
+                result = getResult( state.firstNumber ,state.firstNumber,state.typeOfOperation );
+                return {
+                    ...state,
+                    currentResult:result,
+                    isActive: false,
+                };
+            } else if ( state.firstNumber !== '' && state.secondNumber === '' ) {
+                result = getResult( state.currentResult ,state.firstNumber,state.typeOfOperation );
+                return {
+                    ...state,
+                    currentResult:result,
+                    isActive: false,
+                };
+            } else {
+                result = getResult( state.firstNumber, state.currentResult ,state.typeOfOperation );
+                return {
+                    ...state,
+                    currentResult:result,
+                    isActive: false,
+                };
+            }
         case 'clear':
             return {
                 ...state,
@@ -88,10 +121,12 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
             return {
                 ...state,
                 currentNumbers: '',
-                lastOperation: action.payload,
+                firstNumber: state.currentNumbers,
+                secondNumber: '',
                 typeOfOperation: action.payload,
                 isActive: true,
             };
+
         case 'setNumber':
             if ( state.currentNumbers.length > 9 && !state.currentNumbers.includes('.') ) {return state;}
             if ( state.currentNumbers.length > 11 && (state.currentNumbers.includes('.') && state.currentNumbers.includes(',')) ) {return state;}
@@ -127,7 +162,6 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
 
                 if ( state.isActive ) {
                     result = handlePointAndComma(state.currentNumbers + action.payload);
-                    console.log('entre aqui!!');
                     return {
                         ...state,
                         currentNumbers: result,
@@ -138,7 +172,7 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                     return {
                         ...state,
                         currentNumbers: result,
-                        firstNumber: result ,
+                        // firstNumber: result ,
                     };
                 }
             }
@@ -194,7 +228,7 @@ export const CalculatorScreen = () => {
             <View style={ styles.buttonContainer }>
                 <CalculatorButton title="0" buttonLarge={ true } dispatch={ () => dispatch({type:'setNumber', payload:'0'}) }/>
                 <CalculatorButton title="," dispatch={ () => dispatch({type:'setNumber', payload:','})}/>
-                <CalculatorButton title="=" background={ colors.orange } dispatch={ () => dispatch({type:'calculate',payload:state}) }/>
+                <CalculatorButton title="=" background={ colors.orange } dispatch={ () => dispatch({type:'calculate'}) }/>
             </View>
         </View>
     );
