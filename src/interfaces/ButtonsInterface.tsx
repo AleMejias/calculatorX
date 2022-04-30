@@ -5,7 +5,6 @@ export interface CalculatorState{
     firstNumber:string;
     secondNumber:string;
     typeOfOperation:string;
-    lastOperation:string;
     isActive:boolean;
 }
 
