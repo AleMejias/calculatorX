@@ -39,7 +39,6 @@ const initialValue : CalculatorState = {
 }; */
 
 const getResult = ( firstNumber:string , secondNumber:string ,operationType:string):string => {
-    console.log(`${firstNumber} * ${secondNumber}`);
     let result:number = 0;
     if ( operationType === '+' ) {
         result = Number(firstNumber) + Number(secondNumber);
@@ -229,12 +228,18 @@ export const CalculatorScreen = () => {
     const [ state , dispatch ] = useReducer( calculatorReducer,initialValue );
     let currentR:string = '';
     console.log(state);
-    if ( state.currentResult.includes('.') ) {
+    if ( state.currentResult.length > 9 && state.currentResult.length < 11) {
+        currentR = handlePointAndComma( state.currentResult );
+        console.log(`Numero recibido ${currentR}`);
+    } else if ( state.currentResult.length >= 11 ) {
+        currentR = handlePointAndComma( state.currentResult );
+    } else if ( state.currentResult.length > 21 && state.currentResult.includes('+') ) {
+        currentR = handlePointAndComma( state.currentResult );
+    } else if ( state.currentResult.includes('.') ) {
         currentR =  handlePointAndComma( state.currentResult.replace('.',','));
     } else if ( state.currentNumbers.includes('.') ) {
         currentR =  handlePointAndComma( state.currentNumbers.replace('.',','));
     } else if ( state.isActive && state.firstNumber !== '' && state.secondNumber === '' && state.firstNumber.includes('.') ) {
-        console.log('entra aqui!!!');
         currentR = state.firstNumber.replace('.',',');
     } else if ( state.isActive && state.firstNumber !== '' && state.secondNumber === '' ) {
         currentR = handlePointAndComma( state.firstNumber );
@@ -243,6 +248,7 @@ export const CalculatorScreen = () => {
     } else if ( state.currentNumbers !== '' ) {
         currentR = handlePointAndComma( state.currentNumbers );
     } else {
+        console.log('no entro al else!!');
         currentR = handlePointAndComma( state.currentResult );
     }
 
