@@ -11,11 +11,12 @@ import { changeToPositiveOrNegative } from '../helpers/changeToPositiveOrNegativ
 
 
 type Actions =
-| { type: 'clear' }
-| { type: 'setNumber', payload: string }
+| { type: 'calculate' }
 | { type: 'changeToPositiveOrNegative' , payload: string }
+| { type: 'clear' }
 | { type: 'operation' , payload:string }
-| { type: 'calculate' };
+| { type: 'percent' , payload:string }
+| { type: 'setNumber', payload: string };
 
 
 
@@ -28,20 +29,20 @@ const initialValue : CalculatorState = {
     isActive:false,
 };
 
-/* const handleOperations = ( firtsNumber:string , secondNumber:string, operatorType:string):string => {
+const handlePercent = ( num:string ):string => {
 
-    let result:number = 0;
-    if ( operatorType === '+' ) {
-         result = parseFloat( firtsNumber ) + parseFloat( secondNumber );
-    }
+    let result:string = '';
 
-    return result.toString();
-}; */
+    result = (Number( num ) / 100).toString();
+
+    return result;
+};
 
 const getResult = ( firstNumber:string , secondNumber:string ,operationType:string):string => {
     let result:number = 0;
     if ( operationType === '+' ) {
         result = Number(firstNumber) + Number(secondNumber);
+        console.log(`${firstNumber} ${operationType} ${secondNumber} ${result}`);
     } else if ( operationType === '-' ) {
         result = Number(firstNumber) - Number(secondNumber);
     } else if ( operationType === 'x') {
@@ -58,10 +59,18 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
     let result:string = '';
     switch ( action.type ) {
         case 'changeToPositiveOrNegative':
-            return {
-                ...state,
-                currentNumbers: changeToPositiveOrNegative(state.currentNumbers),
-            };
+            if ( state.currentResult !== '' ) {
+                return {
+                    ...state,
+                    currentResult: changeToPositiveOrNegative(state.currentResult),
+                };
+            } else {
+                return {
+                    ...state,
+                    currentNumbers: changeToPositiveOrNegative(state.currentNumbers),
+                    secondNumber: changeToPositiveOrNegative( state.currentNumbers ),
+                };
+            }
         case 'calculate':
             if ( state.isActive ) {
                 if ( state.firstNumber !== '' && state.secondNumber !== '' && state.currentResult === '' ) {
@@ -169,6 +178,27 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                     isActive: true,
                 };
             }
+        case 'percent':
+            if ( state.firstNumber === '' ) {
+                result = handlePercent( state.currentNumbers );
+                return {
+                    ...state,
+                    currentNumbers: result,
+                };
+            } else if ( state.isActive && state.secondNumber !== '' ) {
+                result = handlePercent( state.currentNumbers );
+                return {
+                    ...state,
+                    secondNumber: result,
+                    currentNumbers: result,
+                };
+             } else {
+                result = handlePercent( state.currentResult );
+                return {
+                    ...state,
+                    currentResult: result,
+                };
+            }
 
         case 'setNumber':
             if ( state.currentNumbers.length > 8 && !state.currentNumbers.includes('.') ) {return state;}
@@ -213,6 +243,7 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 if ( state.isActive ) {
                     // result = handlePointAndComma(state.currentNumbers + action.payload);
                     result = state.currentNumbers + action.payload;
+                    console.log('entro justooo aca!!!');
                     return {
                         ...state,
                         currentNumbers: result,
@@ -241,8 +272,11 @@ export const CalculatorScreen = () => {
     if ( state.currentResult === 'Infinity' ) {
         currentR = 'Error';
     } else if ( state.currentResult.includes('+') || state.currentResult.length > 9 ) {
-        currentR = handlePointAndComma( state.currentResult , state.typeOfOperation );
-        console.log(`Numero recibido en el primer ELSE IF${currentR}`);
+        if ( state.currentResult.includes('.') ) {
+            currentR = Number(state.currentResult).toFixed(2).toString();
+        } else {
+            currentR = handlePointAndComma( state.currentResult , state.typeOfOperation );
+        }
     } else if ( state.currentResult.includes('.') ) {
         currentR =  handlePointAndComma( state.currentResult.replace('.',','), state.typeOfOperation);
     } else if ( state.currentNumbers.includes('.') ) {
@@ -275,9 +309,9 @@ export const CalculatorScreen = () => {
             </View>
 
             <View style={ styles.buttonContainer }>
-                <CalculatorButton title="C" background={ colors.grayLight } textColor={ colors.black } dispatch={ () => dispatch({type:'clear'}) }/>
+                <CalculatorButton title="AC" background={ colors.grayLight } textColor={ colors.black } dispatch={ () => dispatch({type:'clear'}) }/>
                 <CalculatorButton title="+/-" background={ colors.grayLight } textColor={ colors.black } dispatch={ () => dispatch({type:'changeToPositiveOrNegative',payload:currentR}) }/>
-                <CalculatorButton title="%" background={ colors.grayLight } textColor={ colors.black } />
+                <CalculatorButton title="%" background={ colors.grayLight } textColor={ colors.black } dispatch={ () => dispatch({type:'percent',payload:currentR}) }/>
                 <CalculatorButton title="÷" background={ colors.orange }  dispatch={ () => dispatch({type:'operation', payload:'/'}) }/>
             </View>
             <View style={ styles.buttonContainer }>
