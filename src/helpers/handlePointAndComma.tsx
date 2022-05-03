@@ -46,20 +46,41 @@ const numberWithOutComma = ( num:string ):string => {
 };
 
 
-export const handlePointAndComma = ( currentNumber:string ): string => {
+export const handlePointAndComma = ( currentNumber:string , typeOfOperation?:string ): string => {
     let value:string = '';
+    console.log(`Me mandaron esto ${currentNumber}`);
 
-    if ( currentNumber.length > 9 && currentNumber.length < 11 ) {
-        value = Number(currentNumber).toExponential(6).toString().replace('+','').replace('.',',');
-    } else if ( currentNumber.length >= 11 && currentNumber.length <= 21){
-        value = Number(currentNumber).toExponential(5).toString().replace('+','').replace('.',',');
-        console.log(`Numero ${currentNumber} tamaño ${currentNumber.length}`);
-    } else if ( currentNumber.length > 21 && currentNumber.includes('+')) {
-        console.log(currentNumber);
-    } else if ( currentNumber.includes(',') ) {
-        value = numberWithComma( currentNumber );
+    if ( typeOfOperation === '/' ) {
+        if ( !currentNumber.includes('e') ) {
+            value = Number( currentNumber ).toFixed(7).toString();
+        } else if ( currentNumber.length > 22 ) {
+            value = Number(currentNumber).toExponential(4).toString().replace('.',',');
+        } else if ( currentNumber.includes('e') ) {
+            if ( currentNumber.length > 18 ) {
+                value = 'Error';
+            } else if ( currentNumber.length < 10 ){
+                value = currentNumber;
+            } else {
+                console.log('por aca!!');
+                value = Number(currentNumber).toExponential(5).toString().replace('.',',');
+            }
+        } else {
+            value = Number(currentNumber).toExponential(5).toString().replace('.',',');
+        }
     } else {
-        value = numberWithOutComma( currentNumber );
-    }    return value;
+        if ( currentNumber.length > 22 ) {
+            value = Number(currentNumber).toExponential(4).toString().replace('+','').replace('.',',');
+        } else if ( currentNumber.includes('+') || currentNumber.length > 10  ) {
+            value = Number(currentNumber).toExponential(5).toString().replace('+','').replace('.',',');
+        } else if ( currentNumber.length > 9  ) {
+            value = Number(currentNumber).toExponential(6).toString().replace('+','').replace('.',',');
+        } else if ( currentNumber.includes(',') ) {
+            value = numberWithComma( currentNumber );
+        } else {
+            value = numberWithOutComma( currentNumber );
+        }
+    }
+
+    return value;
 
 };

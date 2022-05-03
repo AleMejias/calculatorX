@@ -46,19 +46,11 @@ const getResult = ( firstNumber:string , secondNumber:string ,operationType:stri
         result = Number(firstNumber) - Number(secondNumber);
     } else if ( operationType === 'x') {
         result = Number(firstNumber) * Number(secondNumber);
+        console.log(`Operacion: ${ firstNumber } * ${ secondNumber } , resultado: ${ result }`);
+    } else if ( operationType === '/' ) {
+        result = Number(firstNumber) / Number(secondNumber);
+        console.log(`Rersultado de la division: ${ result }`);
     }
-/*     if ( state.secondNumber !== '' ) {
-
-        if ( state.typeOfOperation === '') {
-            result = Number( state.firstNumber ) + Number( state.currentResult );
-            // console.log(`El resultado entre ${state.firstNumber} y ${state.secondNumber} es : ${result}`);
-        } else if ( state.currentResult !== '' ) {
-            result = Number(state.currentResult) + Number(state.secondNumber);
-        } else {
-            result = Number(state.firstNumber) + Number(state.secondNumber);
-        }
-
-    } */
     return result.toString();
 };
 
@@ -141,11 +133,29 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 isActive: false,
             };
         case 'operation':
-            if ( state.currentResult !== '' ) {
+            if ( state.firstNumber !== '' && state.currentResult === '') {
+                return {
+                    ...state,
+                    currentNumbers: '',
+                    firstNumber: state.firstNumber,
+                    secondNumber: '',
+                    typeOfOperation: action.payload,
+                    isActive: true,
+                };
+            } else if ( state.currentResult !== '' ) {
                 return {
                     ...state,
                     currentNumbers: '',
                     firstNumber: state.currentResult,
+                    secondNumber: '',
+                    typeOfOperation: action.payload,
+                    isActive: true,
+                };
+            } else if ( state.firstNumber === '' && state.secondNumber !== '' ) {
+                return {
+                    ...state,
+                    firstNumber: state.typeOfOperation + state.currentNumbers,
+                    currentNumbers: '',
                     secondNumber: '',
                     typeOfOperation: action.payload,
                     isActive: true,
@@ -161,7 +171,7 @@ const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
             }
 
         case 'setNumber':
-            if ( state.currentNumbers.length > 9 && !state.currentNumbers.includes('.') ) {return state;}
+            if ( state.currentNumbers.length > 8 && !state.currentNumbers.includes('.') ) {return state;}
             if ( state.currentNumbers.length > 11 && (state.currentNumbers.includes('.') && state.currentNumbers.includes(',')) ) {return state;}
             if ( state.currentNumbers.length > 11 && state.currentNumbers.includes(',') ) {return state;}
             if ( state.currentNumbers.length > 10 && !state.currentNumbers.includes(',') ) {return state;}
@@ -228,17 +238,15 @@ export const CalculatorScreen = () => {
     const [ state , dispatch ] = useReducer( calculatorReducer,initialValue );
     let currentR:string = '';
     console.log(state);
-    if ( state.currentResult.length > 9 && state.currentResult.length < 11) {
-        currentR = handlePointAndComma( state.currentResult );
-        console.log(`Numero recibido ${currentR}`);
-    } else if ( state.currentResult.length >= 11 ) {
-        currentR = handlePointAndComma( state.currentResult );
-    } else if ( state.currentResult.length > 21 && state.currentResult.includes('+') ) {
-        currentR = handlePointAndComma( state.currentResult );
+    if ( state.currentResult === 'Infinity' ) {
+        currentR = 'Error';
+    } else if ( state.currentResult.includes('+') || state.currentResult.length > 9 ) {
+        currentR = handlePointAndComma( state.currentResult , state.typeOfOperation );
+        console.log(`Numero recibido en el primer ELSE IF${currentR}`);
     } else if ( state.currentResult.includes('.') ) {
-        currentR =  handlePointAndComma( state.currentResult.replace('.',','));
+        currentR =  handlePointAndComma( state.currentResult.replace('.',','), state.typeOfOperation);
     } else if ( state.currentNumbers.includes('.') ) {
-        currentR =  handlePointAndComma( state.currentNumbers.replace('.',','));
+        currentR =  handlePointAndComma( state.currentNumbers.replace('.',','), state.typeOfOperation);
     } else if ( state.isActive && state.firstNumber !== '' && state.secondNumber === '' && state.firstNumber.includes('.') ) {
         currentR = state.firstNumber.replace('.',',');
     } else if ( state.isActive && state.firstNumber !== '' && state.secondNumber === '' ) {
@@ -249,7 +257,7 @@ export const CalculatorScreen = () => {
         currentR = handlePointAndComma( state.currentNumbers );
     } else {
         console.log('no entro al else!!');
-        currentR = handlePointAndComma( state.currentResult );
+        currentR = handlePointAndComma( state.currentResult , state.typeOfOperation);
     }
 
     return (
@@ -270,25 +278,25 @@ export const CalculatorScreen = () => {
                 <CalculatorButton title="C" background={ colors.grayLight } textColor={ colors.black } dispatch={ () => dispatch({type:'clear'}) }/>
                 <CalculatorButton title="+/-" background={ colors.grayLight } textColor={ colors.black } dispatch={ () => dispatch({type:'changeToPositiveOrNegative',payload:currentR}) }/>
                 <CalculatorButton title="%" background={ colors.grayLight } textColor={ colors.black } />
-                <CalculatorButton title="÷" background={ colors.orange } />
+                <CalculatorButton title="÷" background={ colors.orange }  dispatch={ () => dispatch({type:'operation', payload:'/'}) }/>
             </View>
             <View style={ styles.buttonContainer }>
                 <CalculatorButton title="7" dispatch={ () => dispatch({type:'setNumber', payload:'7'}) }/>
                 <CalculatorButton title="8" dispatch={ () => dispatch({type:'setNumber', payload:'8'}) }/>
                 <CalculatorButton title="9" dispatch={ () => dispatch({type:'setNumber', payload:'9'}) }/>
-                <CalculatorButton title="x" background={ colors.orange } dispatch={ () => !state.isActive ? dispatch({type:'operation', payload:'x'}) : ''}/>
+                <CalculatorButton title="x" background={ colors.orange } dispatch={ () => dispatch({type:'operation', payload:'x'}) }/>
             </View>
             <View style={ styles.buttonContainer }>
                 <CalculatorButton title="4" dispatch={ () => dispatch({type:'setNumber', payload:'4'}) }/>
                 <CalculatorButton title="5" dispatch={ () => dispatch({type:'setNumber', payload:'5'}) }/>
                 <CalculatorButton title="6" dispatch={ () => dispatch({type:'setNumber', payload:'6'}) }/>
-                <CalculatorButton title="-" background={ colors.orange } dispatch={ () => !state.isActive ? dispatch({type:'operation', payload:'-'}) : ''}/>
+                <CalculatorButton title="-" background={ colors.orange } dispatch={ () => dispatch({type:'operation', payload:'-'}) }/>
             </View>
             <View style={ styles.buttonContainer }>
                 <CalculatorButton title="1" dispatch={ () => dispatch({type:'setNumber', payload:'1'}) }/>
                 <CalculatorButton title="2" dispatch={ () => dispatch({type:'setNumber', payload:'2'}) }/>
                 <CalculatorButton title="3" dispatch={ () => dispatch({type:'setNumber', payload:'3'}) }/>
-                <CalculatorButton title="+" background={ colors.orange } dispatch={ () => !state.isActive ? dispatch({type:'operation', payload:'+'}) : ''}/>
+                <CalculatorButton title="+" background={ colors.orange } dispatch={ () => dispatch({type:'operation', payload:'+'}) }/>
             </View>
             <View style={ styles.buttonContainer }>
                 <CalculatorButton title="0" buttonLarge={ true } dispatch={ () => dispatch({type:'setNumber', payload:'0'}) }/>
