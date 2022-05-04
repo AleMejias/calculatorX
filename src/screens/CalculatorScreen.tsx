@@ -3,282 +3,37 @@ import React, { useReducer } from 'react';
 import { Text, View } from 'react-native';
 
 import { colors, styles } from '../theme/CalculatorTheme';
+
 import { CalculatorButton } from '../components/CalculatorButton';
-import { CalculatorState } from '../interfaces/ButtonsInterface';
-import { handlePointAndComma } from '../helpers/handlePointAndComma';
-import { changeToPositiveOrNegative } from '../helpers/changeToPositiveOrNegative';
+import { calculatorReducer , initialValue} from '../reducer/calculatorReducer';
+import { handleScreenView } from '../helpers/handleScreenView';
 
 
 
-type Actions =
-| { type: 'calculate' }
-| { type: 'changeToPositiveOrNegative' , payload: string }
-| { type: 'clear' }
-| { type: 'operation' , payload:string }
-| { type: 'percent' , payload:string }
-| { type: 'setNumber', payload: string };
 
-
-
-const initialValue : CalculatorState = {
-    currentNumbers:'',
-    currentResult:'',
-    firstNumber: '',
-    secondNumber: '',
-    typeOfOperation: '',
-    isActive:false,
-};
-
-const handlePercent = ( num:string ):string => {
-
-    let result:string = '';
-
-    result = (Number( num ) / 100).toString();
-
-    return result;
-};
-
-const getResult = ( firstNumber:string , secondNumber:string ,operationType:string):string => {
-    let result:number = 0;
-    if ( operationType === '+' ) {
-        result = Number(firstNumber) + Number(secondNumber);
-        console.log(`${firstNumber} ${operationType} ${secondNumber} ${result}`);
-    } else if ( operationType === '-' ) {
-        result = Number(firstNumber) - Number(secondNumber);
-    } else if ( operationType === 'x') {
-        result = Number(firstNumber) * Number(secondNumber);
-        console.log(`Operacion: ${ firstNumber } * ${ secondNumber } , resultado: ${ result }`);
-    } else if ( operationType === '/' ) {
-        result = Number(firstNumber) / Number(secondNumber);
-        console.log(`Rersultado de la division: ${ result }`);
-    }
-    return result.toString();
-};
-
-const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
-    let result:string = '';
-    switch ( action.type ) {
-        case 'changeToPositiveOrNegative':
-            if ( state.currentResult !== '' ) {
-                return {
-                    ...state,
-                    currentResult: changeToPositiveOrNegative(state.currentResult),
-                };
-            } else {
-                return {
-                    ...state,
-                    currentNumbers: changeToPositiveOrNegative(state.currentNumbers),
-                    secondNumber: changeToPositiveOrNegative( state.currentNumbers ),
-                };
-            }
-        case 'calculate':
-            if ( state.isActive ) {
-                if ( state.firstNumber !== '' && state.secondNumber !== '' && state.currentResult === '' ) {
-                    console.log('entro a isACtive, al primer if de todo');
-                    result = getResult( state.firstNumber,state.secondNumber,state.typeOfOperation );
-                    return {
-                        ...state,
-                        currentResult: result,
-                        currentNumbers: '',
-                        isActive: false,
-                    };
-                } else if ( state.currentResult === '' ) {
-                    console.log('entro a isACtive, al primer if else');
-                    result = getResult( state.firstNumber,state.firstNumber,state.typeOfOperation );
-                    return {
-                        ...state,
-                        currentResult: result,
-                        currentNumbers: '',
-                        isActive: false,
-                    };
-                } else if (  state.firstNumber !== '' && state.secondNumber !== '' && state.currentResult !== '' ) {
-                    console.log('entro a isACtive, al primer if de todo');
-                    result = getResult( state.firstNumber,state.secondNumber,state.typeOfOperation );
-                    return {
-                        ...state,
-                        currentResult: result,
-                        currentNumbers: '',
-                        isActive: false,
-                    };
-                } else {
-                    console.log('entro a isACtive, al else');
-                    result = getResult( state.currentResult,state.currentResult,state.typeOfOperation );
-                    return {
-                        ...state,
-                        currentResult: result,
-                        currentNumbers: '',
-                        isActive: false,
-                    };
-                }
-            } else {
-                if ( state.firstNumber !== '' && state.secondNumber === '' ) {
-                    console.log('entre al ELSE, primer if');
-                    result = getResult( state.currentResult,state.firstNumber,state.typeOfOperation );
-                    return {
-                        ...state,
-                        currentResult: result,
-                        currentNumbers: '',
-                        isActive: false,
-                    };
-                } else {
-                    console.log('entre al else, ELSE');
-                    result = getResult( state.currentResult,state.secondNumber,state.typeOfOperation );
-                    return {
-                        ...state,
-                        currentResult: result,
-                        currentNumbers: '',
-                        isActive: false,
-                    };
-                }
-            }
-        case 'clear':
-            return {
-                ...state,
-                currentNumbers: '',
-                firstNumber: '',
-                secondNumber:'',
-                currentResult:'',
-                typeOfOperation: '',
-                isActive: false,
-            };
-        case 'operation':
-            if ( state.firstNumber !== '' && state.currentResult === '') {
-                return {
-                    ...state,
-                    currentNumbers: '',
-                    firstNumber: state.firstNumber,
-                    secondNumber: '',
-                    typeOfOperation: action.payload,
-                    isActive: true,
-                };
-            } else if ( state.currentResult !== '' ) {
-                return {
-                    ...state,
-                    currentNumbers: '',
-                    firstNumber: state.currentResult,
-                    secondNumber: '',
-                    typeOfOperation: action.payload,
-                    isActive: true,
-                };
-            } else if ( state.firstNumber === '' && state.secondNumber !== '' ) {
-                return {
-                    ...state,
-                    firstNumber: state.typeOfOperation + state.currentNumbers,
-                    currentNumbers: '',
-                    secondNumber: '',
-                    typeOfOperation: action.payload,
-                    isActive: true,
-                };
-            } else {
-                return {
-                    ...state,
-                    currentNumbers: '',
-                    firstNumber: state.currentNumbers,
-                    typeOfOperation: action.payload,
-                    isActive: true,
-                };
-            }
-        case 'percent':
-            if ( state.firstNumber === '' ) {
-                result = handlePercent( state.currentNumbers );
-                return {
-                    ...state,
-                    currentNumbers: result,
-                };
-            } else if ( state.isActive && state.secondNumber !== '' ) {
-                result = handlePercent( state.currentNumbers );
-                return {
-                    ...state,
-                    secondNumber: result,
-                    currentNumbers: result,
-                };
-             } else {
-                result = handlePercent( state.currentResult );
-                return {
-                    ...state,
-                    currentResult: result,
-                };
-            }
-
-        case 'setNumber':
-            if ( state.currentNumbers.length > 8 && !state.currentNumbers.includes('.') ) {return state;}
-            if ( state.currentNumbers.length > 11 && (state.currentNumbers.includes('.') && state.currentNumbers.includes(',')) ) {return state;}
-            if ( state.currentNumbers.length > 11 && state.currentNumbers.includes(',') ) {return state;}
-            if ( state.currentNumbers.length > 10 && !state.currentNumbers.includes(',') ) {return state;}
-
-            if ( action.payload.includes('0') && state.firstNumber === '' ) {
-                if ( state.currentNumbers === '' ){
-                    return state;
-                } else {
-                    // result = handlePointAndComma(state.currentNumbers + action.payload);
-                    result = state.currentNumbers + action.payload;
-                    return {
-                        ...state,
-                        currentNumbers: result,
-                    };
-                }
-            } else if ( action.payload.includes('.') ){
-
-                if ( state.currentNumbers === '' ){
-                    // result = handlePointAndComma('0' + action.payload);
-                    result = '0' + action.payload;
-                    return {
-                        ...state,
-                        currentNumbers: result,
-                    };
-                } else if ( state.currentNumbers.includes('.') ) {
-                    return {
-                        ...state,
-                    };
-                } else {
-                    // result = handlePointAndComma(state.currentNumbers + action.payload);
-                    result = state.currentNumbers + action.payload;
-                    return {
-                        ...state,
-                        currentNumbers: result,
-                    };
-                }
-            } else {
-
-                if ( state.isActive ) {
-                    // result = handlePointAndComma(state.currentNumbers + action.payload);
-                    result = state.currentNumbers + action.payload;
-                    console.log('entro justooo aca!!!');
-                    return {
-                        ...state,
-                        currentNumbers: result,
-                        secondNumber: result,
-                    };
-                } else {
-                    // result = handlePointAndComma(state.currentNumbers + action.payload);
-                    result = state.currentNumbers + action.payload;
-                    return {
-                        ...state,
-                        currentNumbers: result,
-                        // firstNumber: result ,
-                    };
-                }
-            }
-            default:
-                return state;
-            }
-};
 export const CalculatorScreen = () => {
 
 
     const [ state , dispatch ] = useReducer( calculatorReducer,initialValue );
-    let currentR:string = '';
+    let currentR:string = handleScreenView( state );
     console.log(state);
-    if ( state.currentResult === 'Infinity' ) {
+/*     if ( state.currentResult === 'Infinity' ) {
         currentR = 'Error';
     } else if ( state.currentResult.includes('+') || state.currentResult.length > 9 ) {
-        if ( state.currentResult.includes('.') ) {
+        if ( state.isActive && state.firstNumber !== '' && state.secondNumber !== '' ) {
+            currentR = state.secondNumber;
+        } else if ( state.currentResult.includes('.') ) {
             currentR = Number(state.currentResult).toFixed(2).toString();
         } else {
             currentR = handlePointAndComma( state.currentResult , state.typeOfOperation );
         }
     } else if ( state.currentResult.includes('.') ) {
-        currentR =  handlePointAndComma( state.currentResult.replace('.',','), state.typeOfOperation);
+        console.log('creo que entra aqui!');
+        if ( state.isActive && state.firstNumber !== '' && state.secondNumber !== '' ) {
+            currentR = state.secondNumber;
+        } else {
+            currentR =  handlePointAndComma( state.currentResult.replace('.',','), state.typeOfOperation);
+        }
     } else if ( state.currentNumbers.includes('.') ) {
         currentR =  handlePointAndComma( state.currentNumbers.replace('.',','), state.typeOfOperation);
     } else if ( state.isActive && state.firstNumber !== '' && state.secondNumber === '' && state.firstNumber.includes('.') ) {
@@ -292,7 +47,7 @@ export const CalculatorScreen = () => {
     } else {
         console.log('no entro al else!!');
         currentR = handlePointAndComma( state.currentResult , state.typeOfOperation);
-    }
+    } */
 
     return (
         <View style={ styles.calculatorContainer }>

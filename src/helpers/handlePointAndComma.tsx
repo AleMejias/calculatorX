@@ -1,4 +1,4 @@
-const numberWithComma = ( num:string ):string => {
+export const numberWithComma = ( num:string ):string => {
 
     // let valueArr:string[] = num.split(',');
     let decimals:string = num.split(',')[1];
@@ -25,6 +25,7 @@ const numberWithComma = ( num:string ):string => {
 const numberWithOutComma = ( num:string ):string => {
     let valueWithOutPoint:string[] = num.split('').filter((character) => character !== '.');
     let value:string = '';
+    if ( num.includes('-') && num.length === 4 ) { return num;}
     valueWithOutPoint.forEach((e , index) => {
         value = value + e;
         if ( valueWithOutPoint.length === 4 && index === 0 )  {
@@ -48,11 +49,15 @@ const numberWithOutComma = ( num:string ):string => {
 
 export const handlePointAndComma = ( currentNumber:string , typeOfOperation?:string ): string => {
     let value:string = '';
-    console.log(`Me mandaron esto ${currentNumber}`);
 
     if ( typeOfOperation === '/' ) {
         if ( !currentNumber.includes('e') ) {
-            value = Number( currentNumber ).toFixed(7).toString();
+            if ( currentNumber.length > 7 ) {
+                value = Number( currentNumber ).toFixed(7).toString();
+
+            } else {
+                value = currentNumber;
+            }
         } else if ( currentNumber.length > 22 ) {
             value = Number(currentNumber).toExponential(4).toString().replace('.',',');
         } else if ( currentNumber.includes('e') ) {
@@ -61,7 +66,6 @@ export const handlePointAndComma = ( currentNumber:string , typeOfOperation?:str
             } else if ( currentNumber.length < 10 ){
                 value = currentNumber;
             } else {
-                console.log('por aca!!');
                 value = Number(currentNumber).toExponential(5).toString().replace('.',',');
             }
         } else {
