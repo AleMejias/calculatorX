@@ -23,9 +23,13 @@ export const numberWithComma = ( num:string ):string => {
 };
 
 const numberWithOutComma = ( num:string ):string => {
-    let valueWithOutPoint:string[] = num.split('').filter((character) => character !== '.');
+    let valueWithOutPoint:string[] = num.split('').filter((character) => character !== '-');
+    let handleSymbol:boolean = num[0] === '-';
     let value:string = '';
+
+
     if ( num.includes('-') && num.length === 4 ) { return num;}
+
     valueWithOutPoint.forEach((e , index) => {
         value = value + e;
         if ( valueWithOutPoint.length === 4 && index === 0 )  {
@@ -43,13 +47,28 @@ const numberWithOutComma = ( num:string ):string => {
         }
     });
 
+     if ( handleSymbol ) {
+         value = '-' + value;
+     }
     return value;
 };
 
 
-export const handlePointAndComma = ( currentNumber:string , typeOfOperation?:string ): string => {
+export const handlePointAndComma = ( currentNumber:string ): string => {
     let value:string = '';
 
+    if ( currentNumber.includes(',') ) {
+        value = numberWithComma( currentNumber );
+    } else {
+        value = numberWithOutComma( currentNumber );
+    }
+
+
+    return value;
+
+};
+
+/*
     if ( typeOfOperation === '/' ) {
         if ( !currentNumber.includes('e') ) {
             if ( currentNumber.length > 7 ) {
@@ -77,7 +96,11 @@ export const handlePointAndComma = ( currentNumber:string , typeOfOperation?:str
         } else if ( currentNumber.includes('+') || currentNumber.length > 10  ) {
             value = Number(currentNumber).toExponential(5).toString().replace('+','').replace('.',',');
         } else if ( currentNumber.length > 9  ) {
-            value = Number(currentNumber).toExponential(6).toString().replace('+','').replace('.',',');
+            if ( currentNumber[0] === '-' ) {
+                value = numberWithOutComma( currentNumber );
+            } else {
+                value = Number(currentNumber).toExponential(6).toString().replace('+','').replace('.',',');
+            }
         } else if ( currentNumber.includes(',') ) {
             value = numberWithComma( currentNumber );
         } else {
@@ -85,6 +108,5 @@ export const handlePointAndComma = ( currentNumber:string , typeOfOperation?:str
         }
     }
 
-    return value;
 
-};
+*/

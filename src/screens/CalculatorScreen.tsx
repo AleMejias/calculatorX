@@ -5,7 +5,7 @@ import { Text, View } from 'react-native';
 import { colors, styles } from '../theme/CalculatorTheme';
 
 import { CalculatorButton } from '../components/CalculatorButton';
-import { calculatorReducer , initialValue} from '../reducer/calculatorReducer';
+import { calculatorReducer , initialValue  } from '../reducer/calculatorReducer';
 import { handleScreenView } from '../helpers/handleScreenView';
 
 
@@ -17,37 +17,6 @@ export const CalculatorScreen = () => {
     const [ state , dispatch ] = useReducer( calculatorReducer,initialValue );
     let currentR:string = handleScreenView( state );
     console.log(state);
-/*     if ( state.currentResult === 'Infinity' ) {
-        currentR = 'Error';
-    } else if ( state.currentResult.includes('+') || state.currentResult.length > 9 ) {
-        if ( state.isActive && state.firstNumber !== '' && state.secondNumber !== '' ) {
-            currentR = state.secondNumber;
-        } else if ( state.currentResult.includes('.') ) {
-            currentR = Number(state.currentResult).toFixed(2).toString();
-        } else {
-            currentR = handlePointAndComma( state.currentResult , state.typeOfOperation );
-        }
-    } else if ( state.currentResult.includes('.') ) {
-        console.log('creo que entra aqui!');
-        if ( state.isActive && state.firstNumber !== '' && state.secondNumber !== '' ) {
-            currentR = state.secondNumber;
-        } else {
-            currentR =  handlePointAndComma( state.currentResult.replace('.',','), state.typeOfOperation);
-        }
-    } else if ( state.currentNumbers.includes('.') ) {
-        currentR =  handlePointAndComma( state.currentNumbers.replace('.',','), state.typeOfOperation);
-    } else if ( state.isActive && state.firstNumber !== '' && state.secondNumber === '' && state.firstNumber.includes('.') ) {
-        currentR = state.firstNumber.replace('.',',');
-    } else if ( state.isActive && state.firstNumber !== '' && state.secondNumber === '' ) {
-        currentR = handlePointAndComma( state.firstNumber );
-    } else if ( state.currentNumbers === '' && state.currentResult === '' ) {
-        currentR = '0';
-    } else if ( state.currentNumbers !== '' ) {
-        currentR = handlePointAndComma( state.currentNumbers );
-    } else {
-        console.log('no entro al else!!');
-        currentR = handlePointAndComma( state.currentResult , state.typeOfOperation);
-    } */
 
     return (
         <View style={ styles.calculatorContainer }>
