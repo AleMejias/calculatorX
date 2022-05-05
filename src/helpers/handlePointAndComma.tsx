@@ -1,32 +1,20 @@
 export const numberWithComma = ( num:string ):string => {
 
-    // let valueArr:string[] = num.split(',');
     let decimals:string = num.split(',')[1];
     let valueWithOutPoint:string = '';
     let value:string = num;
-/*     if ( num.includes('.') ) {
 
-        valueArr.forEach((character , index) => {
-            if ( index === 0 ) {
-                valueWithOutPoint = numberWithOutComma( character );
-            }
-        });
-        value = valueWithOutPoint + ',' + decimals;
-    } else {
-        console.log('llama al CON coma!');
-        valueWithOutPoint = numberWithOutComma( num.split(',')[0] );
-        value = valueWithOutPoint + ',' + decimals;
-    } */
     valueWithOutPoint = numberWithOutComma( num.split(',')[0] );
     value = valueWithOutPoint + ',' + decimals;
+
     return value;
 };
 
 const numberWithOutComma = ( num:string ):string => {
+
     let valueWithOutPoint:string[] = num.split('').filter((character) => character !== '-');
     let handleSymbol:boolean = num[0] === '-';
     let value:string = '';
-
 
     if ( num.includes('-') && num.length === 4 ) { return num;}
 
@@ -50,11 +38,13 @@ const numberWithOutComma = ( num:string ):string => {
      if ( handleSymbol ) {
          value = '-' + value;
      }
+
     return value;
 };
 
 
 export const handlePointAndComma = ( currentNumber:string ): string => {
+
     let value:string = '';
 
     if ( currentNumber.includes(',') ) {
@@ -67,46 +57,3 @@ export const handlePointAndComma = ( currentNumber:string ): string => {
     return value;
 
 };
-
-/*
-    if ( typeOfOperation === '/' ) {
-        if ( !currentNumber.includes('e') ) {
-            if ( currentNumber.length > 7 ) {
-                value = Number( currentNumber ).toFixed(7).toString();
-
-            } else {
-                value = currentNumber;
-            }
-        } else if ( currentNumber.length > 22 ) {
-            value = Number(currentNumber).toExponential(4).toString().replace('.',',');
-        } else if ( currentNumber.includes('e') ) {
-            if ( currentNumber.length > 18 ) {
-                value = 'Error';
-            } else if ( currentNumber.length < 10 ){
-                value = currentNumber;
-            } else {
-                value = Number(currentNumber).toExponential(5).toString().replace('.',',');
-            }
-        } else {
-            value = Number(currentNumber).toExponential(5).toString().replace('.',',');
-        }
-    } else {
-        if ( currentNumber.length > 22 ) {
-            value = Number(currentNumber).toExponential(4).toString().replace('+','').replace('.',',');
-        } else if ( currentNumber.includes('+') || currentNumber.length > 10  ) {
-            value = Number(currentNumber).toExponential(5).toString().replace('+','').replace('.',',');
-        } else if ( currentNumber.length > 9  ) {
-            if ( currentNumber[0] === '-' ) {
-                value = numberWithOutComma( currentNumber );
-            } else {
-                value = Number(currentNumber).toExponential(6).toString().replace('+','').replace('.',',');
-            }
-        } else if ( currentNumber.includes(',') ) {
-            value = numberWithComma( currentNumber );
-        } else {
-            value = numberWithOutComma( currentNumber );
-        }
-    }
-
-
-*/

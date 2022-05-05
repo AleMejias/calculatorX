@@ -12,20 +12,27 @@ export const CalculatorButton = ( {
     background = colors.grayDark,
     textColor = colors.white,
     buttonLarge = false,
-    dispatch }:Button ) => {
+    dispatch,
+    currentButtonActive,
+    isActive,
+    blockButton }:Button ) => {
+
+    let currentStyles = (currentButtonActive === title && isActive ) ? { background:`${colors.white}`,color:`${colors.orange}` } : { background:`${background}`,color:`${textColor}` };
+
     return (
 
         <TouchableOpacity
             onPress = { dispatch }
             activeOpacity={0.8}
+            disabled={ blockButton }
             style={{
                 ...styles.button,
-                backgroundColor: background,
+                backgroundColor: currentStyles.background,
                 width: buttonLarge  ? 158 : 70 ,
             }}>
             <Text style={{
                 ...styles.buttonText,
-                color:textColor,
+                color:currentStyles.color,
             }}>{ title }
             </Text>
         </TouchableOpacity>

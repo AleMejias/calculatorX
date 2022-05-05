@@ -30,6 +30,7 @@ export const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
                 return {
                     ...state,
                     currentResult: changeToPositiveOrNegative(state.currentResult),
+                    firstNumber: changeToPositiveOrNegative(state.currentResult),
                 };
             } else {
                 return {
@@ -134,7 +135,6 @@ export const calculatorReducer = ( state:CalculatorState, action:Actions ) => {
 
                 return {
                     ...state,
-                    // firstNumber: state.typeOfOperation + state.currentNumbers,
                     firstNumber: state.currentNumbers,
                     currentNumbers: '',
                     secondNumber: '',

@@ -19,17 +19,11 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent:'flex-end',
         paddingHorizontal: 35,
-        // borderWidth:1,
-        // borderColor: colors.white,
     },
     resultContainer:{
         paddingHorizontal: 10,
-        // borderWidth:1,
-        // borderColor: colors.white,
     },
     buttonContainer:{
-        // borderWidth:1,
-        // borderColor: colors.white,
         flexDirection:'row',
         justifyContent:'center',
         marginVertical:8,
