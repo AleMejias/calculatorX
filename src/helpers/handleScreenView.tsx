@@ -31,7 +31,7 @@ export const handleScreenView = ( state:CalculatorState ):string => {
             currentR = `${ Number(state.currentResult).toExponential(6).replace('.',',') }`;
         }
     } else if ( !state.currentResult.includes('e') ) {
-        if ( state.typeOfOperation === '/' || state.typeOfOperation === '+' || state.typeOfOperation === 'x') {
+        if ( state.typeOfOperation === '÷' || state.typeOfOperation === '+' || state.typeOfOperation === 'x') {
             if ( state.currentResult.length < 10 ) {
                 currentR = `${ Number( state.currentResult ) }`.replace('.',',');
                 currentR = handlePointAndComma(currentR.replace('.',','));

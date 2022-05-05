@@ -14,7 +14,7 @@ export const getResult = ( firstNumber:string , secondNumber:string ,operationTy
         result = `${Number(firstNumber) - Number(secondNumber)}`;
     } else if ( operationType === 'x') {
         result = `${Number(firstNumber) * Number(secondNumber)}`;
-    } else if ( operationType === '/' ) {
+    } else if ( operationType === '÷' ) {
         if ( ( firstNumber === '' || firstNumber === '0') && secondNumber !== '0' ) {
             result = '';
         } else if ( firstNumber !== '0' &&  secondNumber === '0') {
